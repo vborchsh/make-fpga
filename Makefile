@@ -20,20 +20,20 @@ open:
 	@vivado -nolog -nojournal -notrace -mode gui -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
 
 save:
-	@vivado -nolog -nojournal -notrace -mode batch -source scripts/save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
 synth: create
-	@vivado -nolog -nojournal -notrace -mode batch -source scripts/synth.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/synth.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
 impl: create
-	@vivado -nolog -nojournal -notrace -mode batch -source scripts/synth_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/synth_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
 export_xsa:
-	@vivado -nolog -nojournal -notrace -mode batch -source scripts/export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
 export_bin:
-	@echo "all: { $(BUILD_NAME)/$(BUILD_NAME).runs/impl_1/top.bit /* Bitstream file name */ }" > scripts/image.bif
-	bootgen -w -image scripts/image.bif -arch zynq -process_bitstream bin
+	@echo "all: { $(BUILD_NAME)/$(BUILD_NAME).runs/impl_1/top.bit /* Bitstream file name */ }" > make-fpga/image.bif
+	bootgen -w -image make-fpga/image.bif -arch zynq -process_bitstream bin
 	@cp $(BUILD_NAME)/$(BUILD_NAME).runs/impl_1/top.bit.bin ./
 	@echo The .bit.bin file has been generated
 	@ls -la top.bit.bin
