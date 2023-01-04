@@ -12,13 +12,13 @@ open: ## Creates Vivado's project in the BUILD_NAME directory in GUI mode;
 save: ## Open Vivado's project and save all settings to the build_project.tcl file by calling write_project_tcl;
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
-synth: ## Open and run synthesis for current project. It must be created by "create" target;
+synth: ## Open and run synthesis for current project. The project must be created by "create" target;
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/synth.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
-impl: ## Open and run synhesis and implementation for current project. It must be created by "create" target;
+impl: ## Open and run synthesis and implementation for current project. The project must be created by "create" target;
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/synth_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
-xsa: ## Export .xsa file to the project's root
+xsa: ## Export .xsa file to the project's root;
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
 bin: ## Converts .bin file to the .bit.bin and copy it to the project's root;
@@ -69,6 +69,13 @@ template: ## Generates template project's structure with folders and gitignore;
 	@ls -la
 
 help: ## Print this help.
+	@echo "make-fpga is set of simple scripts for handling Vivado non-project mode design flow"
+	@echo ""
+	@echo "Available options:"
+	@echo "BUILD_NAME?=build - project name."
+	@echo ""
+	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
+	@echo ""
 
 .PHONY: all create open save synth impl xsa bin clean template help
