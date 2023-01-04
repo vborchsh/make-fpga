@@ -1,4 +1,4 @@
-# FPGA-make
+# make-FPGA
 
 Bunch of scripts for handling Vivado's project in non-project mode.
 
@@ -25,14 +25,19 @@ make -f make-fpga/Makefile create # And this will create a project
 
 The repository must be created with a structure from the article: https://habr.com/ru/post/683580/.
 Then, you have to create Vivado's project in GUI mode, setup the part, inital files and so on. Then,
-run `make -f make-fpga/Makefile save BUILD_NAME=<project name>`
+run
+
+```
+cd <repo name>
+make -f make-fpga/Makefile save BUILD_NAME=<project name>
+```
 
 Otherwise, you can run `template` target in empty folder and script will build repository's structure.
 But you still have to initialize the project by Vivado's GUI.
 
 ### Project's deploy
 
-In short terms, how to deploy project:
+In short terms:
 
 ```
 git clone <project link> --recursive
@@ -42,9 +47,9 @@ make -f make-fpga/Makefile
 
 You'll get help from Make CLI. 
 
-### Project updating
+### Project's updating
 
-In short terms, how to update and save project:
+In short terms:
 
 In case any changes in the project's structure and/or parameters (fileset, paths,
 compilation settings and so on) you have to run `make -f make-fpga/Makefile save` before commit.
