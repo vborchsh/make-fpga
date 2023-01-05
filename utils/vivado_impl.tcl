@@ -5,11 +5,6 @@ set _xil_proj_path_ [lindex $::argv 1]
 open_project $_xil_proj_path_/$_xil_proj_name_
 update_compile_order -fileset sources_1
 
-# Synthesis
-reset_run synth_1
-launch_runs synth_1 -jobs 16
-wait_on_run synth_1
-
 # Implementation
 reset_run impl_1
 launch_runs impl_1 -to_step write_bitstream -jobs 16

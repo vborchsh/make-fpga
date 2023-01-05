@@ -1,25 +1,27 @@
 BUILD_NAME?=build
 .DEFAULT_GOAL:=help
 
-all: create impl xsa bin
+all: create synth impl xsa bin ## Creates project, run synthesys, implementation and exports xsa and bin files;
 
-create: ## Creates Vivado's project in the BUILD_NAME directory;
+build: synth impl xsa bin ## Run synthesys, implementation and exports xsa and bin files;
+
+create: ## Creates Vivado's project BUILD_NAME in the BUILD_NAME directory;
 	@vivado -nolog -nojournal -notrace -mode batch -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
 
-open: ## Creates Vivado's project in the BUILD_NAME directory in GUI mode;
-	@vivado -nolog -nojournal -notrace -mode gui -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
+open: ## Open Vivado's project BUILD_NAME in the BUILD_NAME directory in GUI mode. Project must be created by "create" target
+	@vivado -nolog -nojournal -notrace -mode gui $(BUILD_NAME)/$(BUILD_NAME).xpr
 
 save: ## Open Vivado's project and save all settings to the build_project.tcl file by calling write_project_tcl;
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
-synth: ## Open and run synthesis for current project. The project must be created by "create" target;
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/synth.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+synth: ## Open and run synthesis for BUILD_NAME project. The project must be created by "create" target;
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
-impl: ## Open and run synthesis and implementation for current project. The project must be created by "create" target;
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/synth_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+impl: ## Open and run implementation for BUILD_NAME project. The project must be synthesized by "synth" target;
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
 xsa: ## Export .xsa file to the project's root;
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
 bin: ## Converts .bin file to the .bit.bin and copy it to the project's root;
 	@echo "all: { $(BUILD_NAME)/$(BUILD_NAME).runs/impl_1/top.bit /* Bitstream file name */ }" > make-fpga/utils/image.bif

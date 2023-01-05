@@ -42,7 +42,7 @@ In short terms:
 ```
 git clone <project link> --recursive
 cd <project name>
-make -f make-fpga/Makefile
+make -f make-fpga/Makefile all
 ```
 
 You'll get help from Make CLI. 
