@@ -30,43 +30,14 @@ bin: ## Converts .bin file to the .bit.bin and copy it to the project's root;
 	@echo The .bit.bin file has been generated
 	@ls -la top.bit.bin
 
-clean: ## Delete everything
+clean: ## Delete everything;
 	@rm -rf $(BUILD_NAME) .Xil *.bit.bin *.xsa
 
 template: ## Generates template project's structure with folders and gitignore;
 	@echo "This target will build template project's structure in the folder:"
 	@echo $(shell pwd)
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
-	@mkdir bd
-	@mkdir constr
-	@mkdir core
-	@mkdir rtl
-	@mkdir sim
-	@echo '# Simulation' > .gitignore
-	@echo 'sim/**/work' >> .gitignore
-	@echo 'sim/**/*.wlf' >> .gitignore
-	@echo 'sim/**/sim_build' >> .gitignore
-	@echo 'sim/**/transcript' >> .gitignore
-	@echo 'sim/**/modelsim.ini' >> .gitignore
-	@echo '' >> .gitignore
-	@echo '# Hardware platform' >> .gitignore
-	@echo '.Xil' >> .gitignore
-	@echo '*.jou' >> .gitignore
-	@echo '*.log' >> .gitignore
-	@echo '*.str' >> .gitignore
-	@echo '*.bit.bin' >> .gitignore
-	@echo '*.xsa' >> .gitignore
-	@echo '*.bif' >> .gitignore
-	@echo 'build' >> .gitignore
-	@echo '' >> .gitignore
-	@echo '/bd/**/*.*' >> .gitignore
-	@echo '!/bd/**/*.bd' >> .gitignore
-	@echo '!/bd/**/*_wrapper*' >> .gitignore
-	@echo '' >> .gitignore
-	@echo 'core/ipshared' >> .gitignore
-	@echo 'core/xilinx/**/*.*' >> .gitignore
-	@echo '!core/xilinx/**/*.xci' >> .gitignore
-	@echo '!core/xilinx/**/*.xcix' >> .gitignore
+	@cp -r template/* .
 	@echo "Done!"
 	@ls -la
 
