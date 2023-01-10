@@ -19,15 +19,6 @@
 # Check file required for this script exists
 proc checkRequiredFiles { origin_dir} {
   set status true
-  set files [list \
- "[file normalize "$origin_dir/build/build.srcs/utils_1/imports/synth_1/top.dcp"]"\
-  ]
-  foreach ifile $files {
-    if { ![file isfile $ifile] } {
-      puts " Could not find local file $ifile "
-      set status false
-    }
-  }
 
   set files [list \
  "[file normalize "$origin_dir/rtl/top.sv"]"\
@@ -216,32 +207,6 @@ set obj [get_filesets sim_1]
 set_property -name "top" -value "top" -objects $obj
 set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 
-# Set 'utils_1' fileset object
-set obj [get_filesets utils_1]
-# Add local files from the original project (-no_copy_sources specified)
-set files [list \
- [file normalize "${origin_dir}/build/build.srcs/utils_1/imports/synth_1/top.dcp" ]\
-]
-set added_files [add_files -fileset utils_1 $files]
-
-# Set 'utils_1' fileset file properties for remote files
-# None
-
-# Set 'utils_1' fileset file properties for local files
-set file "synth_1/top.dcp"
-set file_obj [get_files -of_objects [get_filesets utils_1] [list "*$file"]]
-set_property -name "netlist_only" -value "0" -objects $file_obj
-
-
-# Set 'utils_1' fileset properties
-set obj [get_filesets utils_1]
-
-set idrFlowPropertiesConstraints ""
-catch {
- set idrFlowPropertiesConstraints [get_param runs.disableIDRFlowPropertyConstraints]
- set_param runs.disableIDRFlowPropertyConstraints 1
-}
-
 # Create 'synth_1' run (if not found)
 if {[string equal [get_runs -quiet synth_1] ""]} {
     create_run -name synth_1 -part xc7z010clg400-1 -flow {Vivado Synthesis 2021} -strategy "Vivado Synthesis Defaults" -report_strategy {No Reports} -constrset constrs_1
@@ -263,7 +228,6 @@ if { $obj != "" } {
 }
 set obj [get_runs synth_1]
 set_property -name "part" -value "xc7z010clg400-1" -objects $obj
-set_property -name "incremental_checkpoint" -value "$proj_dir/build.srcs/utils_1/imports/synth_1/top.dcp" -objects $obj
 set_property -name "auto_incremental_checkpoint" -value "1" -objects $obj
 set_property -name "strategy" -value "Vivado Synthesis Defaults" -objects $obj
 

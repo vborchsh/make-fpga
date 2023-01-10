@@ -37,7 +37,7 @@ template: ## Generates template project's structure with folders and gitignore;
 	@echo "This target will build template project's structure in the folder:"
 	@echo $(shell pwd)
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
-	@cp -r template/* .
+	@cp -r make-fpga/template/* .
 	@echo "Done!"
 	@ls -la
 
