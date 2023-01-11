@@ -1,6 +1,6 @@
 # make-FPGA
 
-Bunch of scripts for handling Vivado's project in non-project mode.
+Set of scripts for handling Vivado's project in non-project mode.
 
 ## Example
 
