@@ -1,3 +1,4 @@
+# Just wrapper for internal Makefile
 .DEFAULT_GOAL:=help
 
 all:
