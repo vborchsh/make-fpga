@@ -54,4 +54,4 @@ help: ## Print this help.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 
-.PHONY: all create open save synth impl xsa bin clean template help
+.PHONY: all build create open save synth impl xsa bin clean template help
