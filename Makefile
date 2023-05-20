@@ -40,6 +40,8 @@ bin: ## Converts .bin file to the .bit.bin and copy it to the project's root. BU
 clean: ## Delete everything;
 	@rm -rf $(BUILD_NAME) .Xil *.bit.bin *.xsa
 	@rm -rf bd/**/!(hdl|*.bd)
+	@rm -rf core/xilinx/ipshared
+	@rm -rf core/xilinx/**/!(*.xci)
 
 template: ## Generates template project's structure with folders and gitignore;
 	@echo "This target will build template project's structure in the folder:"
