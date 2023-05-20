@@ -2,6 +2,7 @@ SHELL:=/bin/bash -O extglob
 
 BUILD_NAME?=build
 BUILD_ARCH?=zynq
+BUILD_JOBS?=16
 
 .DEFAULT_GOAL:=help
 
@@ -19,10 +20,12 @@ save: ## Open Vivado's project and save all settings to the build_project.tcl fi
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
 synth: ## Open and run synthesis for BUILD_NAME project. The project must be created by "create" target;
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+	@echo 'Starts synthesis with $(BUILD_JOBS) jobs'
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME) $(BUILD_JOBS)
 
 impl: ## Open and run implementation for BUILD_NAME project. The project must be synthesized by "synth" target;
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+	@echo 'Starts implementation with $(BUILD_JOBS) jobs'
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME) $(BUILD_JOBS)
 
 xsa: ## Export .xsa file to the project's root;
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
@@ -52,6 +55,7 @@ help: ## Print this help.
 	@echo "Available options:"
 	@echo "BUILD_NAME?=build - project name;"
 	@echo "BUILD_ARCH?=zynq - architecture (zynq, zynqmp, fpga). Applicable only for 'bin' target."
+	@echo "BUILD_JOBS?=16 - Number of threads for Vivado. Applicable only for 'synth' and 'impl' target."
 	@echo ""
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
