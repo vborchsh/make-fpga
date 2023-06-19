@@ -30,6 +30,9 @@ impl: ## Open and run implementation for BUILD_NAME project. The project must be
 xsa: ## Export .xsa file to the project's root;
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
 
+timing: ## Check timing, return 1 in case slacks < 0
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_timing.tcl -tclargs $(BUILD_NAME) $(BUILD_NAME)
+
 bin: ## Converts .bin file to the .bit.bin and copy it to the project's root. BUILD_ARCH should be checked!;
 	@echo "all: { $(BUILD_NAME)/$(BUILD_NAME).runs/impl_1/top.bit /* Bitstream file name */ }" > make-fpga/utils/image.bif
 	bootgen -w -image make-fpga/utils/image.bif -arch $(BUILD_ARCH) -process_bitstream bin
