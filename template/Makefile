@@ -22,6 +22,9 @@ synth:
 impl:
 	$(MAKE) -f make-fpga/Makefile $@
 
+timing:
+	$(MAKE) -f make-fpga/Makefile $@
+
 xsa:
 	$(MAKE) -f make-fpga/Makefile $@
 
@@ -37,4 +40,4 @@ template:
 help:
 	$(MAKE) -f make-fpga/Makefile $@
 
-.PHONY: all build create open save synth impl xsa bin clean template help
+.PHONY: all build create open save synth impl timing xsa bin clean template help
