@@ -5,6 +5,8 @@ BUILD_PATH?=$(BUILD_NAME)
 BUILD_ARCH?=zynq
 BUILD_JOBS?=16
 
+BIT_FILENAME=$(shell find $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/*.bit | xargs basename)
+
 .DEFAULT_GOAL:=help
 
 all: create synth impl xsa bin ## Creates project, run synthesys, implementation and exports xsa and bin files;
@@ -35,11 +37,10 @@ timing: ## Check timing, return 1 in case slacks < 0;
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_timing.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
 bin: ## Converts .bin file to the .bit.bin and copy it to the project's root. BUILD_ARCH should be checked!;
-	@echo "all: { $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BUILD_NAME).bit /* Bitstream file name */ }" > make-fpga/utils/image.bif
+	@echo "all: { $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME) /* Bitstream file name */ }" > make-fpga/utils/image.bif
 	bootgen -w -image make-fpga/utils/image.bif -arch $(BUILD_ARCH) -process_bitstream bin
-	@cp $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BUILD_NAME).bit.bin ./
-	@echo The $(BUILD_NAME).bit.bin file has been generated
-	@ls -la $(BUILD_NAME).bit.bin
+	@cp $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME).bin ./
+	@echo $(BIT_FILENAME).bin file has been generated
 
 clean: ## Delete everything;
 	@rm -rf $(BUILD_PATH) .Xil *.bit.bin *.xsa
