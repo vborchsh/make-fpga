@@ -5,16 +5,22 @@ set _xil_proj_path_ [lindex $::argv 1]
 open_project $_xil_proj_path_/$_xil_proj_name_
 
 open_run impl_1
-set wns [get_property SLACK [get_timing_paths -setup -hold]]
+
+puts "-> Timings check starts..."
+set whs [get_property SLACK [get_timing_paths -setup -hold]]
+set wns [get_property SLACK [get_timing_paths]]
+puts "-> WHS: $whs"
 puts "-> WNS: $wns"
 
-set design_timing_pass [expr {$wns < 0}]
+set whs_pass [expr {$whs < 0}]
+set wns_pass [expr {$wns < 0}]
+set timing_pass [expr {$whs_pass && $wns_pass}]
 
-if {$design_timing_pass == 1} {
+if {$timing_pass} {
   puts "-> Timings NOT pass"
 } else {
   puts "-> Timings pass"
 }
 
 close_project
-exit $design_timing_pass
+exit $timing_pass
