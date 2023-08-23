@@ -13,7 +13,9 @@ all: create synth impl xsa bin ## Creates project, run synthesys, implementation
 
 build: synth impl ## Run synthesys and implementation;
 
-create: ## Creates Vivado's project BUILD_NAME in the BUILD_PATH directory;
+create:./$(BUILD_PATH)/$(BUILD_NAME).xpr ## Create BUILD_PATH/BUILD_NAME.xpr project. Skip if project exists
+
+./$(BUILD_PATH)/$(BUILD_NAME).xpr:
 	@vivado -nolog -nojournal -notrace -mode batch -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
 
 open: ## Open Vivado's project BUILD_NAME in the BUILD_PATH directory in GUI mode. Project must be created by "create" target
