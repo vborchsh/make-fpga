@@ -1,9 +1,12 @@
 SHELL:=/bin/bash -O extglob
 
+MAKE_FPGA_VER="0.3"
+
 BUILD_NAME?=build
 BUILD_PATH?=$(BUILD_NAME)
 BUILD_ARCH?=zynq
 BUILD_JOBS?=16
+BUILD_USER_TCL?=$(shell bash -c 'read -p "Enter path to TCL script file (e.g. /home/pipa/popa.tcl): " tcl_name; echo $$tcl_name')
 
 BIT_FILENAME=$(shell find $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/*.bit | xargs basename)
 
@@ -44,6 +47,9 @@ bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH s
 	@cp $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME).bin ./
 	@echo $(BIT_FILENAME).bin file has been generated
 
+user-tcl: ## Run given TCL script in Vivado console
+	vivado -nolog -nojournal -notrace -mode batch -source $(BUILD_USER_TCL)
+
 clean: ## Delete everything
 	@rm -rf $(BUILD_PATH) .Xil *.bit.bin *.xsa
 	@rm -rf bd/**/!(hdl|*.bd)
@@ -59,13 +65,15 @@ template: ## Generate template project's structure with folders and .gitignore
 	@ls -la
 
 help: ## Print this help
-	@echo "make-fpga is set of scripts for handling Vivado's non-project mode design flow"
+	@echo "make-fpga v$(MAKE_FPGA_VER)"
+	@echo "This is a set of Make scripts for handling Vivado's non-project mode design flow"
 	@echo ""
 	@echo "Available options:"
 	@echo "BUILD_NAME?=build - project name"
 	@echo "BUILD_PATH?=BUILD_NAME - project path (folder with BUILD_NAME.* subfolders)"
 	@echo "BUILD_ARCH?=zynq - architecture (zynq, zynqmp, fpga). Applicable only for 'bin' target"
 	@echo "BUILD_JOBS?=16 - Number of threads for Vivado. Applicable only for 'synth' and 'impl' target"
+	@echo "BUILD_USER_TCL?=<prompt input> - User TCL script name. Applicable only for 'user-tcl' target"
 	@echo ""
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
