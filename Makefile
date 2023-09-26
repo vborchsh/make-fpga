@@ -42,10 +42,16 @@ timing: ## Check timing, return 1 in case slacks < 0
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_timing.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
 bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH should be checked!
-	@echo "all: { $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME) /* Bitstream file name */ }" > make-fpga/utils/image.bif
-	bootgen -w -image make-fpga/utils/image.bif -arch $(BUILD_ARCH) -process_bitstream bin
-	@cp $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME).bin ./
-	@echo $(BIT_FILENAME).bin file has been generated
+	@if [ "$(BUILD_ARCH)" == "fpga" ]; then \
+		echo "Skip $(BIT_FILENAME) binary generation due to BUILD_ARCH=$(BUILD_ARCH) variable"; \
+	elif [[ "$(BUILD_ARCH)" = "zynq" || "$(BUILD_ARCH)" = "zynqmp" ]]; then \
+		echo "all: { $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME) /* Bitstream file name */ }" > make-fpga/utils/image.bif; \
+		bootgen -w -image make-fpga/utils/image.bif -arch $(BUILD_ARCH) -process_bitstream bin; \
+		cp $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME).bin ./; \
+		echo "$(BIT_FILENAME).bin file has been generated"; \
+	else \
+		echo "Skip $(BIT_FILENAME) binary generation due to unknown BUILD_ARCH=$(BUILD_ARCH) variable"; \
+	fi
 
 user-tcl: ## Run given TCL script in Vivado console
 	vivado -nolog -nojournal -notrace -mode batch -source $(BUILD_USER_TCL)
