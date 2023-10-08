@@ -1,6 +1,6 @@
 SHELL:=/bin/bash -O extglob
 
-MAKE_FPGA_VER="0.3"
+MAKE_FPGA_VER="0.4"
 
 BUILD_NAME?=build
 BUILD_PATH?=$(BUILD_NAME)
@@ -40,6 +40,9 @@ xsa: ## Export .xsa file to the project's root
 
 timing: ## Check timing, return 1 in case slacks < 0
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_timing.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
+
+ip_upgrade: ## Upgrade `locked` AND `not updated` IP cores in the project
+	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_ip_upgrade.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
 bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH should be checked!
 	@if [ "$(BUILD_ARCH)" == "fpga" ]; then \
