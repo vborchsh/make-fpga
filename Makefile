@@ -21,17 +21,21 @@ create:./$(BUILD_PATH)/$(BUILD_NAME).xpr ## Create BUILD_PATH/BUILD_NAME.xpr pro
 ./$(BUILD_PATH)/$(BUILD_NAME).xpr:
 	@vivado -nolog -nojournal -notrace -mode batch -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
 
-open: ## Open BUILD_PATH/BUILD_NAME.xpr project in GUI mode
+open:create ## Open BUILD_PATH/BUILD_NAME.xpr project in GUI mode. Create project if needed
 	@vivado -nolog -nojournal -notrace -mode gui $(BUILD_PATH)/$(BUILD_NAME).xpr
 
 save: ## Open project and save all settings to the `build_project.tcl`
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
-synth: ## Run synthesis for BUILD_NAME project
+synth:create ./$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1/__synthesis_is_complete__ ## Run synthesis for BUILD_NAME project. Create project if needed
+
+./$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1/__synthesis_is_complete__:
 	@echo 'Starts synthesis with $(BUILD_JOBS) jobs'
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
 
-impl: ## Run implementation for BUILD_NAME project
+impl:create synth ./$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME) ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
+
+./$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME):
 	@echo 'Starts implementation with $(BUILD_JOBS) jobs'
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
 
