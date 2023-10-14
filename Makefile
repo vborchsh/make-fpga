@@ -63,7 +63,11 @@ bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH s
 user-tcl: ## Run given TCL script in Vivado console
 	vivado -nolog -nojournal -notrace -mode batch -source $(BUILD_USER_TCL)
 
-clean: ## Delete everything
+clean: ## Delete project folder, keep IP and BD cache in `core` and `bd` folders
+	@rm -rf $(BUILD_PATH) .Xil *.bit.bin *.xsa
+	@rm -rf bd/**/!(hdl|*.bd)
+
+clean_all: ## Delete everything
 	@rm -rf $(BUILD_PATH) .Xil *.bit.bin *.xsa
 	@rm -rf bd/**/!(hdl|*.bd)
 	@rm -rf core/xilinx/ipshared
@@ -92,4 +96,4 @@ help: ## Print this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 
-.PHONY: all build create open save synth impl xsa bin clean template help
+.PHONY: all build create open save synth impl xsa bin clean clean_all template help
