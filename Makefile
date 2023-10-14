@@ -42,10 +42,10 @@ impl:create synth ./$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME) ## R
 xsa: ## Export .xsa file to the project's root
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
-timing: ## Check timing, return 1 in case slacks < 0
+timing: ## Check timing, return 1 in case WNS and WHS slacks < 0
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_timing.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
-ip_upgrade: ## Upgrade `locked` AND `not updated` IP cores in the project
+ip_upgrade: ## Upgrade `locked` AND `not updated` IP cores in the project, exclude BD
 	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_ip_upgrade.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
 bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH should be checked!
