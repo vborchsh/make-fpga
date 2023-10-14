@@ -27,28 +27,34 @@ First, let's ask for some help:
 
 ```
 $ make help
-make-fpga is set of scripts for handling Vivado's non-project mode design flow
+make-fpga v0.6
+This is a set of Make scripts for handling Vivado's non-project mode design flow
 
 Available options:
-BUILD_NAME?=build - project name;
-BUILD_PATH?=BUILD_NAME - project path (folder with BUILD_NAME.* subfolders);
-BUILD_ARCH?=zynq - architecture (zynq, zynqmp, fpga). Applicable only for 'bin' target.
-BUILD_JOBS?=16 - Number of threads for Vivado. Applicable only for 'synth' and 'impl' target.
+BUILD_NAME?=build - project name
+BUILD_PATH?=BUILD_NAME - project path (folder with BUILD_NAME.* subfolders)
+BUILD_ARCH?=zynq - architecture (zynq, zynqmp, fpga). Applicable only for 'bin' target
+BUILD_JOBS?=16 - Number of threads for Vivado. Applicable only for 'synth' and 'impl' target
+BUILD_USER_TCL?=<prompt input> - User TCL script name. Applicable only for 'user-tcl' target
 
 Available targets:
-all        Creates project, run synthesys, implementation and exports xsa and bin files;
-bin        Converts .bin file to the .bit.bin and copy it to the project's root. BUILD_ARCH should be checked!;
-build      Run synthesys and implementation;
-clean      Delete everything;
-create     Creates Vivado's project BUILD_NAME in the BUILD_PATH directory;
-help       Print this help.
-impl       Open and run implementation for BUILD_NAME project. The project must be synthesized by "synth" target;
-open       Open Vivado's project BUILD_NAME in the BUILD_PATH directory in GUI mode. Project must be created by "create" target
-save       Open Vivado's project and save all settings to the build_project.tcl file by calling write_project_tcl;
-synth      Open and run synthesis for BUILD_NAME project. The project must be created by "create" target;
-template   Generates template project's structure with folders and gitignore;
-timing     Check timing, return 1 in case slacks < 0;
-xsa        Export .xsa file to the project's root;
+all        Create project, run synthesys, implementation and export xsa and bin files
+bin        Export .bit.bin to the project's root after implementation. BUILD_ARCH should be checked!
+build      Run synthesys and implementation
+clean_all  Delete everything
+clean      Delete project folder, keep IP and BD cache in `core` and `bd` folders
+create     Create BUILD_PATH/BUILD_NAME.xpr project. Skip if project exists
+help       Print this help
+impl       Run implementation for BUILD_NAME project. Create and synthesise project if needed
+ip_upgrade Upgrade `locked` AND `not updated` IP cores in the project, exclude BD
+open       Open BUILD_PATH/BUILD_NAME.xpr project in GUI mode. Create project if needed
+save       Open project and save all settings to the `build_project.tcl`
+synth      Run synthesis for BUILD_NAME project. Create project if needed
+template   Generate template project's structure with folders and .gitignore
+timing     Check timing, return 1 in case WNS and WHS slacks < 0
+user-tcl   Run given TCL script in Vivado console
+xsa        Export .xsa file to the project's root
+
 ```
 
 ### Project from scratch
