@@ -1,4 +1,5 @@
 # Just dummy wrapper for redirect command to main `Makefile` in `make-fpga` submodule
-%: force
+.DEFAULT_GOAL:=help
+
+%:
 	@$(MAKE) -f make-fpga/Makefile $@
-force: ;

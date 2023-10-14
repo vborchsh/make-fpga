@@ -8,7 +8,7 @@ BUILD_ARCH?=zynq
 BUILD_JOBS?=16
 BUILD_USER_TCL?=$(shell bash -c 'read -p "Enter path to TCL script file (e.g. /home/pipa/popa.tcl): " tcl_name; echo $$tcl_name')
 
-BIT_FILENAME=$(shell find $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/*.bit | xargs basename)
+BIT_FILENAME=$(shell find $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/*.bit | sed "s/.*\///")
 
 .DEFAULT_GOAL:=help
 
