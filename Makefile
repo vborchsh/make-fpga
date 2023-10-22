@@ -2,16 +2,20 @@ SHELL:=/bin/bash -O extglob
 
 MAKE_FPGA_VER="0.6"
 
+# Environment variables
 BUILD_NAME?=build
 BUILD_PATH?=$(BUILD_NAME)
 BUILD_ARCH?=zynq
 BUILD_JOBS?=16
-BUILD_USER_TCL?=$(shell bash -c 'read -p "Enter path to TCL script file (e.g. /home/pipa/popa.tcl): " tcl_name; echo $$tcl_name')
+BUILD_USER_TCL?=$(shell bash -c 'read -p "Enter path to TCL script (e.g. /some/script.tcl): " tcl_name; echo $$tcl_name')
 
-BIT_FILENAME=$(shell find $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/*.bit | sed "s/.*\///")
-
+# Just aliases
+SYNTH_FOLDER=$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1
+IMPL_FOLDER=$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1
 VIVADO_BATCH=vivado -nolog -nojournal -notrace -mode batch
 VIVADO_GUI=vivado -nolog -nojournal -notrace -mode gui
+# Check if implementation folder is exist and keep `bitstream` filename with extension
+BIT_FILENAME=$(shell [ -d $(IMPL_FOLDER) ] && find $(IMPL_FOLDER) -name "*.bit" | sed "s/.*\///")
 
 .DEFAULT_GOAL:=help
 
