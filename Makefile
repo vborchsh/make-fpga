@@ -23,9 +23,9 @@ all: create synth impl xsa bin ## Create project, run synthesys, implementation 
 
 build: synth impl ## Run synthesys and implementation
 
-create:./$(BUILD_PATH)/$(BUILD_NAME).xpr ## Create BUILD_PATH/BUILD_NAME.xpr project. Skip if project exists
+create: $(BUILD_PATH)/$(BUILD_NAME).xpr ## Create BUILD_PATH/BUILD_NAME.xpr project. Skip if project exists
 
-./$(BUILD_PATH)/$(BUILD_NAME).xpr:
+$(BUILD_PATH)/$(BUILD_NAME).xpr:
 	@$(VIVADO_BATCH) -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
 
 open:create ## Open BUILD_PATH/BUILD_NAME.xpr project in GUI mode. Create project if needed
@@ -34,15 +34,15 @@ open:create ## Open BUILD_PATH/BUILD_NAME.xpr project in GUI mode. Create projec
 save: ## Open project and save all settings to the `build_project.tcl`
 	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
-synth:create ./$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1/__synthesis_is_complete__ ## Run synthesis for BUILD_NAME project. Create project if needed
+synth:create $(SYNTH_FOLDER)/__synthesis_is_complete__ ## Run synthesis for BUILD_NAME project. Create project if needed
 
-./$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1/__synthesis_is_complete__:
+$(SYNTH_FOLDER)/__synthesis_is_complete__:
 	@echo 'Starts synthesis with $(BUILD_JOBS) jobs'
 	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
 
-impl:create synth ./$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME) ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
+impl:create synth $(IMPL_FOLDER)/$(BIT_FILENAME) ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
 
-./$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME):
+$(IMPL_FOLDER)/$(BIT_FILENAME):
 	@echo 'Starts implementation with $(BUILD_JOBS) jobs'
 	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
 
