@@ -68,11 +68,11 @@ user-tcl: ## Run given TCL script in Vivado console
 
 clean: ## Delete project folder, keep IP and BD cache in `core` and `bd` folders
 	@rm -rf $(BUILD_PATH) .Xil *.bit.bin *.xsa
+
+clean_bd: ## Clean BD only in `bd` folder
 	@rm -rf bd/**/!(hdl|*.bd)
 
-clean_all: ## Delete everything
-	@rm -rf $(BUILD_PATH) .Xil *.bit.bin *.xsa
-	@rm -rf bd/**/!(hdl|*.bd)
+clean_all:clean clean_bd ## Delete everything
 	@rm -rf core/xilinx/ipshared
 	@rm -rf core/xilinx/**/!(*.xci)
 
