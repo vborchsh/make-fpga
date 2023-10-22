@@ -10,6 +10,9 @@ BUILD_USER_TCL?=$(shell bash -c 'read -p "Enter path to TCL script file (e.g. /h
 
 BIT_FILENAME=$(shell find $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/*.bit | sed "s/.*\///")
 
+VIVADO_BATCH=vivado -nolog -nojournal -notrace -mode batch
+VIVADO_GUI=vivado -nolog -nojournal -notrace -mode gui
+
 .DEFAULT_GOAL:=help
 
 all: create synth impl xsa bin ## Create project, run synthesys, implementation and export xsa and bin files
@@ -19,34 +22,34 @@ build: synth impl ## Run synthesys and implementation
 create:./$(BUILD_PATH)/$(BUILD_NAME).xpr ## Create BUILD_PATH/BUILD_NAME.xpr project. Skip if project exists
 
 ./$(BUILD_PATH)/$(BUILD_NAME).xpr:
-	@vivado -nolog -nojournal -notrace -mode batch -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
+	@$(VIVADO_BATCH) -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
 
 open:create ## Open BUILD_PATH/BUILD_NAME.xpr project in GUI mode. Create project if needed
-	@vivado -nolog -nojournal -notrace -mode gui $(BUILD_PATH)/$(BUILD_NAME).xpr
+	@$(VIVADO_GUI) $(BUILD_PATH)/$(BUILD_NAME).xpr
 
 save: ## Open project and save all settings to the `build_project.tcl`
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
+	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
 synth:create ./$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1/__synthesis_is_complete__ ## Run synthesis for BUILD_NAME project. Create project if needed
 
 ./$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1/__synthesis_is_complete__:
 	@echo 'Starts synthesis with $(BUILD_JOBS) jobs'
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
+	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
 
 impl:create synth ./$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME) ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
 
 ./$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME):
 	@echo 'Starts implementation with $(BUILD_JOBS) jobs'
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
+	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
 
 xsa: ## Export .xsa file to the project's root
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
+	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
 timing: ## Check timing, return 1 in case WNS and WHS slacks < 0
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_timing.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
+	@v$(VIVADO_BATCH) -source make-fpga/utils/vivado_timing.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
 ip_upgrade: ## Upgrade `locked` AND `not updated` IP cores in the project, exclude BD
-	@vivado -nolog -nojournal -notrace -mode batch -source make-fpga/utils/vivado_ip_upgrade.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
+	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_ip_upgrade.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
 bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH should be checked!
 	@if [ "$(BUILD_ARCH)" == "fpga" ]; then \
@@ -61,7 +64,7 @@ bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH s
 	fi
 
 user-tcl: ## Run given TCL script in Vivado console
-	vivado -nolog -nojournal -notrace -mode batch -source $(BUILD_USER_TCL)
+	@$(VIVADO_BATCH) -source $(BUILD_USER_TCL)
 
 clean: ## Delete project folder, keep IP and BD cache in `core` and `bd` folders
 	@rm -rf $(BUILD_PATH) .Xil *.bit.bin *.xsa
