@@ -59,12 +59,18 @@ bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH s
 	@if [ "$(BUILD_ARCH)" == "fpga" ]; then \
 		echo "Skip $(BIT_FILENAME) binary generation due to BUILD_ARCH=$(BUILD_ARCH) variable"; \
 	elif [[ "$(BUILD_ARCH)" = "zynq" || "$(BUILD_ARCH)" = "zynqmp" ]]; then \
-		echo "all: { $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME) /* Bitstream file name */ }" > make-fpga/utils/image.bif; \
-		bootgen -w -image make-fpga/utils/image.bif -arch $(BUILD_ARCH) -process_bitstream bin; \
-		cp $(BUILD_PATH)/$(BUILD_NAME).runs/impl_1/$(BIT_FILENAME).bin ./; \
-		echo "$(BIT_FILENAME).bin file has been generated"; \
+		if [ -f $(IMPL_FOLDER)/$(BIT_FILENAME) ]; then \
+			echo "all: { $(IMPL_FOLDER)/$(BIT_FILENAME) /* Bitstream file name */ }" > make-fpga/utils/image.bif; \
+			bootgen -w -image make-fpga/utils/image.bif -arch $(BUILD_ARCH) -process_bitstream bin; \
+			cp $(IMPL_FOLDER)/$(BIT_FILENAME).bin ./; \
+			echo "$(BIT_FILENAME).bin file has been generated"; \
+		else \
+			echo "$(BIT_FILENAME).bin file is not exist"; \
+			exit 1; \
+		fi \
 	else \
-		echo "Skip $(BIT_FILENAME) binary generation due to unknown BUILD_ARCH=$(BUILD_ARCH) variable"; \
+		echo "Skip $(BIT_FILENAME).bin binary generation due to unknown BUILD_ARCH=$(BUILD_ARCH) variable"; \
+		exit 1; \
 	fi
 
 user-tcl: ## Run given TCL script in Vivado console
