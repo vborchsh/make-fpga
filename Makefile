@@ -40,11 +40,14 @@ $(SYNTH_FOLDER)/__synthesis_is_complete__:
 	@echo 'Starts synthesis with $(BUILD_JOBS) jobs'
 	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
 
-impl:create synth $(IMPL_FOLDER)/$(BIT_FILENAME) ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
-
-$(IMPL_FOLDER)/$(BIT_FILENAME):
-	@echo 'Starts implementation with $(BUILD_JOBS) jobs'
-	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
+impl: create synth ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
+	@if [ ! -f "$(IMPL_FOLDER)/$(BIT_FILENAME)" ]; then \
+		echo 'Starts implementation with $(BUILD_JOBS) jobs'; \
+		$(VIVADO_BATCH) -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS); \
+	else \
+		echo "Nothing to be done for 'impl'. Bitstream file is already exist: $(IMPL_FOLDER)/$(BIT_FILENAME)"; \
+		exit 0; \
+	fi
 
 xsa: ## Export .xsa file to the project's root
 	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_export_xsa.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
