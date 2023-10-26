@@ -2,4 +2,4 @@
 .DEFAULT_GOAL:=help
 
 %:
-	@$(MAKE) -f make-fpga/Makefile $@
+	@$(MAKE) --no-print-directory -f make-fpga/Makefile $@
