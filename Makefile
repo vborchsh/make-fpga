@@ -112,4 +112,4 @@ help: ## Print this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 
-.PHONY: all build create open save synth impl xsa bin clean clean_all template help
+.PHONY: all rebuild create open save synth impl xsa timing ip_upgrade bin user-tcl clean clean_bd clean_all template help
