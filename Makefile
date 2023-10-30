@@ -19,28 +19,28 @@ BIT_FILENAME=$(shell [ -d $(IMPL_FOLDER) ] && find $(IMPL_FOLDER) -name "*.bit" 
 
 .DEFAULT_GOAL:=help
 
-all: create synth impl xsa bin ## Create project, run synthesys, implementation and export xsa and bin files
+all: impl xsa bin ## Create project, run synthesys, implementation and export xsa and bin files
 
-build: synth impl ## Run synthesys and implementation
+rebuild: impl ## Run synthesys and implementation
 
 create: $(BUILD_PATH)/$(BUILD_NAME).xpr ## Create BUILD_PATH/BUILD_NAME.xpr project. Skip if project exists
 
 $(BUILD_PATH)/$(BUILD_NAME).xpr:
 	@$(VIVADO_BATCH) -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
 
-open:create ## Open BUILD_PATH/BUILD_NAME.xpr project in GUI mode. Create project if needed
+open: create ## Open BUILD_PATH/BUILD_NAME.xpr project in GUI mode. Create project if needed
 	@$(VIVADO_GUI) $(BUILD_PATH)/$(BUILD_NAME).xpr
 
 save: ## Open project and save all settings to the `build_project.tcl`
 	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_save_project.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH)
 
-synth:create $(SYNTH_FOLDER)/__synthesis_is_complete__ ## Run synthesis for BUILD_NAME project. Create project if needed
+synth: create $(SYNTH_FOLDER)/__synthesis_is_complete__ ## Run synthesis for BUILD_NAME project. Create project if needed
 
 $(SYNTH_FOLDER)/__synthesis_is_complete__:
 	@echo 'Starts synthesis with $(BUILD_JOBS) jobs'
 	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
 
-impl: create synth ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
+impl: synth ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
 	@if [ ! -f "$(IMPL_FOLDER)/$(BIT_FILENAME)" ]; then \
 		echo 'Starts implementation with $(BUILD_JOBS) jobs'; \
 		$(VIVADO_BATCH) -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS); \
@@ -85,7 +85,7 @@ clean: ## Delete project folder, keep IP and BD cache in `core` and `bd` folders
 clean_bd: ## Clean BD only in `bd` folder
 	@rm -rf bd/**/!(hdl|*.bd)
 
-clean_all:clean clean_bd ## Delete everything
+clean_all: clean clean_bd ## Delete everything
 	@rm -rf core/xilinx/ipshared
 	@rm -rf core/xilinx/**/!(*.xci)
 
