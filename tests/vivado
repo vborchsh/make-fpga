@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for var in "$@"
+do
+    echo "$var" >> "vivado.cmd"
+done
+echo "" >> "vivado.cmd"
