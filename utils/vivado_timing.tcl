@@ -7,8 +7,8 @@ open_project $_xil_proj_path_/$_xil_proj_name_
 open_run impl_1
 
 puts "-> Timings check starts..."
-set whs [get_property SLACK [get_timing_paths -setup -hold]]
-set wns [get_property SLACK [get_timing_paths]]
+set whs [get_property SLACK [get_timing_paths -hold]]
+set wns [get_property SLACK [get_timing_paths -setup]]
 puts "-> WHS: $whs"
 puts "-> WNS: $wns"
 
