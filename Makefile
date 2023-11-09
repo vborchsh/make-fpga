@@ -1,6 +1,6 @@
 SHELL:=/bin/bash -O extglob
 
-MAKE_FPGA_VER="0.7"
+MAKE_FPGA_VER="0.8"
 
 # Environment variables
 BUILD_NAME?=build
