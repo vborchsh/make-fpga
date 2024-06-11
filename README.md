@@ -36,6 +36,8 @@ BUILD_PATH?=BUILD_NAME - project path (folder with BUILD_NAME.* subfolders)
 BUILD_ARCH?=zynq - architecture (zynq, zynqmp, fpga). Applicable only for 'bin' target
 BUILD_JOBS?=16 - Number of threads for Vivado. Applicable only for 'synth' and 'impl' target
 BUILD_USER_TCL?=<prompt input> - User TCL script name. Applicable only for 'user-tcl' target
+BUILD_OOC_TOP?="" - Name of top-level module for OOC flow
+BUILD_OOC_CONSTR?="" - Name of constraints file for OOC flow. Relative to project's root
 
 Available targets:
 all        Create project, run synthesys, implementation and export xsa and bin files
