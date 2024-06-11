@@ -9,6 +9,9 @@ BUILD_ARCH?=zynq
 BUILD_JOBS?=16
 BUILD_USER_TCL?=$(shell bash -c 'read -p "Enter path to TCL script (e.g. /some/script.tcl): " tcl_name; echo $$tcl_name')
 
+BUILD_OOC_TOP?=""
+BUILD_OOC_CONSTR?=""
+
 # Just aliases
 SYNTH_FOLDER=$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1
 IMPL_FOLDER=$(BUILD_PATH)/$(BUILD_NAME).runs/impl_1
@@ -75,6 +78,9 @@ bin: ## Export .bit.bin to the project's root after implementation. BUILD_ARCH s
 		echo "Skip $(BIT_FILENAME).bin binary generation due to unknown BUILD_ARCH=$(BUILD_ARCH) variable"; \
 		exit 1; \
 	fi
+
+run-ooc: ## Run OOC flow for `BUILD_OOC_TOP` module and `BUILD_OOC_CONSTR` timing constraints
+	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_ooc.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_OOC_TOP) $(BUILD_OOC_CONSTR)
 
 user-tcl: ## Run given TCL script in Vivado console
 	@$(VIVADO_BATCH) -source $(BUILD_USER_TCL)
