@@ -11,6 +11,11 @@ BUILD_USER_TCL?=$(shell bash -c 'read -p "Enter path to TCL script (e.g. /some/s
 
 BUILD_OOC_TOP?=""
 BUILD_OOC_CONSTR?=""
+BUILD_STRAT_SYNT?=""
+BUILD_STRAT_IMPL?=""
+
+L_YEL=\033[0;33m
+NC=\033[0m # No Color
 
 # Just aliases
 SYNTH_FOLDER=$(BUILD_PATH)/$(BUILD_NAME).runs/synth_1
@@ -26,7 +31,7 @@ all: impl xsa bin ## Create project, run synthesys, implementation and export xs
 
 rebuild: impl ## Run synthesys and implementation
 
-create: $(BUILD_PATH)/$(BUILD_NAME).xpr ## Create BUILD_PATH/BUILD_NAME.xpr project. Skip if project exists
+create: $(BUILD_PATH)/$(BUILD_NAME).xpr ## Create BUILD_PATH/BUILD_NAME.xpr project. Skip if project is exists
 
 $(BUILD_PATH)/$(BUILD_NAME).xpr:
 	@$(VIVADO_BATCH) -source build_project.tcl -tclargs --project_name $(BUILD_NAME)
@@ -41,12 +46,12 @@ synth: create $(SYNTH_FOLDER)/__synthesis_is_complete__ ## Run synthesis for BUI
 
 $(SYNTH_FOLDER)/__synthesis_is_complete__:
 	@echo 'Starts synthesis with $(BUILD_JOBS) jobs'
-	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS)
+	@$(VIVADO_BATCH) -source make-fpga/utils/vivado_synth.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS) $(BUILD_STRAT_SYNT)
 
 impl: synth ## Run implementation for BUILD_NAME project. Create and synthesise project if needed
 	@if [ ! -f "$(IMPL_FOLDER)/$(BIT_FILENAME)" ]; then \
 		echo 'Starts implementation with $(BUILD_JOBS) jobs'; \
-		$(VIVADO_BATCH) -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS); \
+		$(VIVADO_BATCH) -source make-fpga/utils/vivado_impl.tcl -tclargs $(BUILD_NAME) $(BUILD_PATH) $(BUILD_JOBS) $(BUILD_STRAT_IMPL); \
 	else \
 		echo "Nothing to be done for 'impl'. Bitstream file is already exist: $(IMPL_FOLDER)/$(BIT_FILENAME)"; \
 		exit 0; \
@@ -104,18 +109,20 @@ template: ## Generate template project's structure with folders and .gitignore
 	@ls -la
 
 help: ## Print this help
-	@echo "make-fpga v$(MAKE_FPGA_VER)"
-	@echo "This is a set of Make scripts for handling Vivado's non-project mode design flow"
-	@echo ""
-	@echo "Available options:"
-	@echo "BUILD_NAME?=build - project name"
-	@echo "BUILD_PATH?=BUILD_NAME - project path (folder with BUILD_NAME.* subfolders)"
-	@echo "BUILD_ARCH?=zynq - architecture (zynq, zynqmp, fpga). Applicable only for 'bin' target"
-	@echo "BUILD_JOBS?=16 - Number of threads for Vivado. Applicable only for 'synth' and 'impl' target"
-	@echo "BUILD_USER_TCL?=<prompt input> - User TCL script name. Applicable only for 'user-tcl' target"
-	@echo ""
-	@echo "Available targets:"
+	@printf "make-fpga v$(MAKE_FPGA_VER)\n"
+	@printf "This is a set of Make scripts for handling Vivado's non-project mode design flow\n\n"
+	@printf "Available options:\n"
+	@printf "$(L_YEL)BUILD_NAME$(NC)?=build - project name\n"
+	@printf "$(L_YEL)BUILD_PATH$(NC)?=BUILD_NAME - project path (folder with BUILD_NAME.* subfolders)\n"
+	@printf "$(L_YEL)BUILD_ARCH$(NC)?=zynq - architecture (zynq, zynqmp, fpga). Applicable only for 'bin' target\n"
+	@printf "$(L_YEL)BUILD_JOBS$(NC)?=16 - Number of threads for Vivado. Applicable only for 'synth' and 'impl' target\n"
+	@printf "$(L_YEL)BUILD_USER_TCL$(NC)?=<prompt input> - User TCL script name. Applicable only for 'user-tcl' target\n"
+	@printf "$(L_YEL)BUILD_STRAT_SYNT$(NC)?=\"\" - Strategy name for 'synth' target. For complete list refer to \
+	UG901. Empty means default strategy.\n"
+	@printf "$(L_YEL)BUILD_STRAT_IMPL$(NC)?=\"\" - Strategy name for 'impl' target. For complete list refer to \
+	UG901. Empty means default strategy.\n"
+	@printf "Available targets:\n"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
-	@echo ""
+	@printf "\n"
 
 .PHONY: all rebuild create open save synth impl xsa timing ip_upgrade bin user-tcl clean clean_bd clean_all template help

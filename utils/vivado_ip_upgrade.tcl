@@ -1,11 +1,11 @@
 # Based on https://github.com/hukenovs/tcl_for_fpga by Kapitanov
 # Upgrade standalone IPs only, not in block design.
 
-set _xil_proj_name_ [lindex $::argv 0]
-set _xil_proj_path_ [lindex $::argv 1]
+set _proj_name_ [lindex $::argv 0]
+set _proj_path_ [lindex $::argv 1]
 
 # Open project
-open_project $_xil_proj_path_/$_xil_proj_name_
+open_project $_proj_path_/$_proj_name_
 
 # Collect all cores list
 set ip_cores_list [get_ips]
